@@ -45,5 +45,5 @@ end
 local path = PotatoPatchUtils.path .. '/src'
 load_files(path)
 --#endregion
-
+SMODS.handle_loc_file(PotatoPatchUtils.path, PotatoPatchUtils.id)
 PotatoPatchUtils.LOC.init()
