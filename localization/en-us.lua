@@ -10,5 +10,8 @@ return {
             -- UI
             ppu_first_time_disable = "Do not show again",
         }
+    },
+    PotatoPatch = {
+        
     }
 }
