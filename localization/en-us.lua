@@ -4,6 +4,7 @@ return {
             -- Credits
             ppu_art_credit = 'Art by ',
             ppu_code_credit = 'Code by ',
+            ppu_team_credit = 'Created by team ',
             ppu_and_spacer = ' and ',
             ppu_comma_spacer = ', ',
 

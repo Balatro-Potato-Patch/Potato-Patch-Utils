@@ -1,0 +1,21 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = '''
+-- TARGET: add your own individual scoring targets
+'''
+position = 'after'
+payload = '''
+for _, team in ipairs(PotatoPatchUtils.get_teams_scoring_targets()) do
+    t[#t + 1] = { object = team, scored_card = G.deck.cards[1] or G.deck }
+end
+for _, dev in ipairs(PotatoPatchUtils.get_developers_scoring_targets()) do
+    t[#t + 1] = { object = dev, scored_card = G.deck.cards[1] or G.deck }
+end
+'''
+match_indent = true
