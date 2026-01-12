@@ -45,3 +45,5 @@ end
 local path = PotatoPatchUtils.path .. '/src'
 load_files(path)
 --#endregion
+
+PotatoPatchUtils.LOC.init()
