@@ -23,6 +23,9 @@ local function load_file_native(path)
     end
     return chunk
 end
+local blacklist = {
+
+}
 local function load_files(path)
     local info = nativefs.getDirectoryItemsInfo(path)
     table.sort(info, function(a, b)
