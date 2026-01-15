@@ -33,20 +33,20 @@ function G.UIDEF.card_h_popup(card)
     local ret_val = PotatoPatchUtils_card_popup(card)
     local obj = card.config.center
     local target = ret_val.nodes[1].nodes[1].nodes[1].nodes
-    if obj and obj.team then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.team, 'ppu_team_credit')
+    if obj and obj.ppu_team then
+        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_team, 'ppu_team_credit')
         if str then
             table.insert(target, str)
         end
     end
-    if obj and obj.artist then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.artist, 'ppu_art_credit')
+    if obj and obj.ppu_artist then
+        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_artist, 'ppu_art_credit')
         if str then
             table.insert(target, str)
         end
     end
-    if obj and obj.coder then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.coder, 'ppu_code_credit')
+    if obj and obj.ppu_coder then
+        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_coder, 'ppu_code_credit')
         if str then
             table.insert(target, str)
         end
@@ -59,12 +59,12 @@ end
 PotatoPatchUtils.Developers = { internal_count = 0 }
 PotatoPatchUtils.Developer = Object:extend()
 function PotatoPatchUtils.Developer:init(args)
-    if args.name and not PotatoPatchUtils.Developers[args.name] then -- Prevents duplicate developers from being created
-        self.name = args.name
+    if args.ppu_name and not PotatoPatchUtils.Developers[args.ppu_name] then -- Prevents duplicate developers from being created
+        self.name = args.ppu_name
         self.colour = args.colour
-        self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchDev_' .. args.name or args.loc
+        self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchDev_' .. args.ppu_name or args.loc
 
-        PotatoPatchUtils.Developers[args.name] = self
+        PotatoPatchUtils.Developers[args.ppu_name] = self
         PotatoPatchUtils.Developers.internal_count = PotatoPatchUtils.Developers.internal_count + 1
     end
 end
@@ -84,12 +84,12 @@ end
 PotatoPatchUtils.Teams = { internal_count = 0 }
 PotatoPatchUtils.Team = Object:extend()
 function PotatoPatchUtils.Developer:init(args)
-    if args.name and not PotatoPatchUtils.Teams[args.name] then -- Prevents duplicate teams from being created
-        self.name = args.name
+    if args.ppu_name and not PotatoPatchUtils.Teams[args.ppu_name] then -- Prevents duplicate teams from being created
+        self.name = args.ppu_name
         self.colour = args.colour
-        self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchDev_' .. args.name or args.loc
+        self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchDev_' .. args.ppu_name or args.loc
 
-        PotatoPatchUtils.Teams[args.name] = self
+        PotatoPatchUtils.Teams[args.ppu_name] = self
         PotatoPatchUtils.Teams.internal_count = PotatoPatchUtils.Teams.internal_count + 1
     end
 end
@@ -111,7 +111,7 @@ if TMJ then
         return type(x) == 'table' and unpack(x) or unpack {}
     end
     TMJ.SEARCH_FIELD_FUNCS[#TMJ.SEARCH_FIELD_FUNCS + 1] = function(center)
-        return { get(center.coder), get(center.artist), get(center.team) }
+        return { get(center.ppu_coder), get(center.ppu_artist), get(center.ppu_team) }
     end
 end
 --#endregion
