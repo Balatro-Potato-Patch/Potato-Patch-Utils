@@ -26,7 +26,7 @@ end
 local blacklist = {
 
 }
-local function load_files(path)
+function PotatoPatchUtils.load_files(path)
     local info = nativefs.getDirectoryItemsInfo(path)
     table.sort(info, function(a, b)
         return a.name < b.name
@@ -42,8 +42,10 @@ local function load_files(path)
         end
     end
 end
-local path = PotatoPatchUtils.path .. '/src'
-load_files(path)
+
 --#endregion
+
+-- Other loading things
+PotatoPatchUtils.load_files(PotatoPatchUtils.path .. '/src')
 SMODS.handle_loc_file(PotatoPatchUtils.path, PotatoPatchUtils.id)
 PotatoPatchUtils.LOC.init()
