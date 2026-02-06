@@ -3,8 +3,6 @@ PotatoPatchUtils = SMODS.current_mod
 --#region File Loading
 local nativefs = NFS
 
-local path_len = string.len(PotatoPatchUtils.path) + 1
-
 local function load_file_native(path)
     if not path or path == "" then
         error("No path was provided to load.")
@@ -15,6 +13,7 @@ local function load_file_native(path)
         return nil,
         "Error reading file '" .. path .. "' for mod with ID '" .. PotatoPatchUtils.id .. "': " .. err
     end
+    local path_len = string.len(path) + 1
     local short_path = string.sub(path, path_len, path:len())
     local chunk, err = load(file_content, "=[SMODS " .. PotatoPatchUtils.id .. ' "' .. short_path .. '"]')
     if not chunk then
@@ -26,13 +25,15 @@ end
 local blacklist = {
 
 }
-function PotatoPatchUtils.load_files(path)
+function PotatoPatchUtils.load_files(path, blacklist)
     local info = nativefs.getDirectoryItemsInfo(path)
     table.sort(info, function(a, b)
         return a.name < b.name
     end)
     for _, v in ipairs(info) do
-        if string.find(v.name, ".lua") and not blacklist[v.name] then -- no X.lua.txt files or whatever unless they are also lua files
+        if v.type == "directory" and not blacklist[v.name] then
+            PotatoPatchUtils.load_files(path .. '/' .. v.name)
+        elseif string.find(v.name, ".lua") and not blacklist[v.name] then -- no X.lua.txt files or whatever unless they are also lua files
             local f, err = load_file_native(path .. "/" .. v.name)
             if f then
                 f()
