@@ -4,7 +4,7 @@
     "id": "PotatoPatchUtils",
     "version": "1.0.0",
     "website_url": "https://github.com/Balatro-Potato-Patch/Potato-Patch-Utils",
-    "description": "",
+    "description": "A util library for mods created by the Potato Patch",
     "prefix": "ppu",
     "author": ["The Potato Patch"],
     "main_file": "main.lua",
