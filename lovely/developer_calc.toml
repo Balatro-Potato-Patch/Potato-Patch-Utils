@@ -11,11 +11,13 @@ pattern = '''
 '''
 position = 'after'
 payload = '''
-for _, team in ipairs(PotatoPatchUtils.get_teams_scoring_targets()) do
-    t[#t + 1] = { object = team, scored_card = G.deck.cards[1] or G.deck }
-end
-for _, dev in ipairs(PotatoPatchUtils.get_developers_scoring_targets()) do
-    t[#t + 1] = { object = dev, scored_card = G.deck.cards[1] or G.deck }
+if PotatoPatchUtils then
+    for _, team in ipairs(PotatoPatchUtils.get_teams_scoring_targets()) do
+        t[#t + 1] = { object = team, scored_card = G.deck.cards[1] or G.deck }
+    end
+    for _, dev in ipairs(PotatoPatchUtils.get_developers_scoring_targets()) do
+        t[#t + 1] = { object = dev, scored_card = G.deck.cards[1] or G.deck }
+    end
 end
 '''
 match_indent = true
