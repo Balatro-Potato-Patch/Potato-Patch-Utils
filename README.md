@@ -38,11 +38,11 @@ If the name of a Developer or Team object are used, the text will use the specif
 ### Localization Loading
 This feature allows for multiple localization `.lua` files to be used in one project. This allows for much easier handling of localization files in collaborative efforts
 
-Creating a folder within the localization folder that has a name that matches a valid localization code will be loaded automatically
-<img width="132" height="91" alt="image" src="https://github.com/user-attachments/assets/742d5d25-a19f-45e8-ba5c-53727c72b01a" />
-
 `PotatoPatchUtils.LOC.process_loc_text(locPath, mod_id)`
 - `locPath` (string) [REQUIRED] - A string of the path leading to the root localization folder
 - `mod_id` (string)  [REQUIRED] - The ID of the mod whose files are being loaded. Is used to properly attribute the file to the mod
+- 
+Creating a folder within the localization folder that has a name that matches a valid localization code will be loaded automatically after running this function
+<img width="132" height="91" alt="image" src="https://github.com/user-attachments/assets/742d5d25-a19f-45e8-ba5c-53727c72b01a" />
 
 ### Info Menu
