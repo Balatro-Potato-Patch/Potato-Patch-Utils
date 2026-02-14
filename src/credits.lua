@@ -66,6 +66,10 @@ function PotatoPatchUtils.Developer:init(args)
 
         PotatoPatchUtils.Developers[args.name] = self
         PotatoPatchUtils.Developers.internal_count = PotatoPatchUtils.Developers.internal_count + 1
+
+        if args.team and PotatoPatchUtils.Teams[args.team] then
+            table.insert(PotatoPatchUtils.Teams[args.team].members, self)
+        end
     end
 end
 
@@ -88,6 +92,7 @@ function PotatoPatchUtils.Developer:init(args)
         self.name = args.name
         self.colour = args.colour
         self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchDev_' .. args.name or args.loc
+        self.members = {}
 
         PotatoPatchUtils.Teams[args.name] = self
         PotatoPatchUtils.Teams.internal_count = PotatoPatchUtils.Teams.internal_count + 1
