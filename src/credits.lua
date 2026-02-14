@@ -62,7 +62,7 @@ function PotatoPatchUtils.Developer:init(args)
     if args.name and not PotatoPatchUtils.Developers[args.name] then -- Prevents duplicate developers from being created
         self.name = args.name
         self.colour = args.colour
-        self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchDev_' .. args.name or args.loc
+        self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchTeam_' .. args.name or args.loc
 
         PotatoPatchUtils.Developers[args.name] = self
         PotatoPatchUtils.Developers.internal_count = PotatoPatchUtils.Developers.internal_count + 1
