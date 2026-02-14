@@ -59,12 +59,12 @@ end
 PotatoPatchUtils.Developers = { internal_count = 0 }
 PotatoPatchUtils.Developer = Object:extend()
 function PotatoPatchUtils.Developer:init(args)
-    if args.ppu_name and not PotatoPatchUtils.Developers[args.ppu_name] then -- Prevents duplicate developers from being created
-        self.name = args.ppu_name
+    if args.name and not PotatoPatchUtils.Developers[args.name] then -- Prevents duplicate developers from being created
+        self.name = args.name
         self.colour = args.colour
-        self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchDev_' .. args.ppu_name or args.loc
+        self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchDev_' .. args.name or args.loc
 
-        PotatoPatchUtils.Developers[args.ppu_name] = self
+        PotatoPatchUtils.Developers[args.name] = self
         PotatoPatchUtils.Developers.internal_count = PotatoPatchUtils.Developers.internal_count + 1
     end
 end
@@ -84,12 +84,12 @@ end
 PotatoPatchUtils.Teams = { internal_count = 0 }
 PotatoPatchUtils.Team = Object:extend()
 function PotatoPatchUtils.Developer:init(args)
-    if args.ppu_name and not PotatoPatchUtils.Teams[args.ppu_name] then -- Prevents duplicate teams from being created
-        self.name = args.ppu_name
+    if args.name and not PotatoPatchUtils.Teams[args.name] then -- Prevents duplicate teams from being created
+        self.name = args.name
         self.colour = args.colour
-        self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchDev_' .. args.ppu_name or args.loc
+        self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchDev_' .. args.name or args.loc
 
-        PotatoPatchUtils.Teams[args.ppu_name] = self
+        PotatoPatchUtils.Teams[args.name] = self
         PotatoPatchUtils.Teams.internal_count = PotatoPatchUtils.Teams.internal_count + 1
     end
 end
