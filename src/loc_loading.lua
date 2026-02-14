@@ -1,3 +1,4 @@
+local nativefs = NFS
 PotatoPatchUtils.LOC = {}
 
 function PotatoPatchUtils.LOC.init()
@@ -49,4 +50,60 @@ function PotatoPatchUtils.LOC.recursive_parse(target)
         end
     end
     return loc_parse_string(target)
+end
+
+local function mergeTables(dest, source)
+    if dest == nil then return source end
+    for k,v in pairs(source) do
+        if dest[k] == nil then
+            dest[k] = v
+        else
+            if type(v) ~= "table" or type(dest[k]) ~= "table" then
+                dest[k] = v
+            else
+                dest[k] = mergeTables(dest[k], v)
+            end
+        end
+    end
+    return dest
+end
+
+local function loadLang(path, mod_id)
+    local files = nativefs.getDirectoryItemsInfo(path)
+    local ret = nil
+    for _, v in ipairs(files) do
+        if v.type == "file" then
+            local loc_table = assert(loadstring(nativefs.read(path .. v.name), ('=[SMODS %s "%s"]'):format(mod_id, string.match(v.name, '[^/]+/[^/]+$'))))()
+            ret = mergeTables(ret, loc_table)
+        end
+    end
+    return ret
+end
+
+local function processLoc(locPath, mod_id)
+    local info = nativefs.getDirectoryItemsInfo(locPath)
+    table.sort(info, function(a, b)
+        return a.name < b.name
+    end)
+    local ret = {}
+    for _, v in ipairs(info) do
+        if v.type == "directory" then
+            ret[v.name] = loadLang(locPath .. v.name .. "/", mod_id)
+        end
+    end
+    return ret
+end
+
+local function injectLoc(loc)
+    if not loc then return end
+    mergeTables(G.localization, loc)
+end
+
+function PotatoPatchUtils.LOC.process_loc_text(locPath, mod_id)
+    local txt = processLoc(locPath, mod_id)
+
+    injectLoc(txt['en-us'])
+    injectLoc(txt['default'])
+    injectLoc(txt[G.SETTINGS.language])
+    injectLoc(txt[G.SETTINGS.real_language])
 end
