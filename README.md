@@ -47,3 +47,18 @@ Creating a folder within the localization folder that has a name that matches a 
 <img width="132" height="91" alt="image" src="https://github.com/user-attachments/assets/742d5d25-a19f-45e8-ba5c-53727c72b01a" />
 
 ### Info Menu
+A customizeable workflow that allows easy creation of pop-up windows, primarily for use as tutorials
+
+Text for an Info Menu must be defined in a localization file under `PotatoPatch = { Info_Menu = { menu_type } }`, and will consist of a `name` and `text` field. `text` fields can contain subsequent `name` and `text` fields which will make up the pages of a window.
+
+The following is an example of proper localization setup from Stocking Stuffer's tutorial pop-up:
+<img width="2308" height="1850" alt="image" src="https://github.com/user-attachments/assets/3e895c24-e516-4ca9-ab25-88e346d9c314" />
+
+
+`PotatoPatchUtils.INFO_MENU.create_menu(args)`
+`args` is a table of the following values:
+- `menu_type` (string) [REQUIRED] - The user-specified type or name of the menu to create. Must also match a key defined in localization
+- `back_func` (string) - A string that points to the menu's callback function. Defaults to `exit_overly_menu`
+- `page` (int) - The page of the menu that will be opened on call. Defaults to `1`
+- `image` (sprite) - A sprite that is to be displayed at the top of the menu
+- `vars` (table) - A table of values to pass into as localization variables
