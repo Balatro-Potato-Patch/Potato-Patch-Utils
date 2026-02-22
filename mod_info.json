@@ -8,7 +8,7 @@
     "prefix": "ppu",
     "author": ["The Potato Patch"],
     "main_file": "main.lua",
-    "priority": 0,
+    "priority": -5,
     "badge_colour": "#f5e27a",
     "dependencies": [
         "Steamodded (>=1.0.0~BETA-1224a)"
