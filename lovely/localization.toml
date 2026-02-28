@@ -1,0 +1,18 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = 'functions/misc_functions.lua'
+match_indent = true
+position = 'at'
+pattern = '''
+if args.type == 'other' then
+'''
+payload = '''
+if args.loc_target then
+    loc_target = args.loc_target
+elseif args.type == 'other' then
+'''
