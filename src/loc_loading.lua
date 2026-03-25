@@ -68,19 +68,19 @@ local function mergeTables(dest, source)
     return dest
 end
 
-local function loadLang(path, mod_id)
+local function loadLang(path)
     local files = nativefs.getDirectoryItemsInfo(path)
     local ret = nil
     for _, v in ipairs(files) do
         if v.type == "file" then
-            local loc_table = assert(loadstring(nativefs.read(path .. v.name), ('=[SMODS %s "%s"]'):format(mod_id, string.match(v.name, '[^/]+/[^/]+$'))))()
+            local loc_table = assert(loadstring(nativefs.read(path .. v.name), ('=[SMODS %s "%s"]'):format(SMODS.current_mod.id, string.match(v.name, '[^/]+/[^/]+$'))))()
             ret = mergeTables(ret, loc_table)
         end
     end
     return ret
 end
 
-local function processLoc(locPath, mod_id)
+local function processLoc(locPath)
     local info = nativefs.getDirectoryItemsInfo(locPath)
     table.sort(info, function(a, b)
         return a.name < b.name
@@ -88,7 +88,7 @@ local function processLoc(locPath, mod_id)
     local ret = {}
     for _, v in ipairs(info) do
         if v.type == "directory" then
-            ret[v.name] = loadLang(locPath .. v.name .. "/", mod_id)
+            ret[v.name] = loadLang(locPath .. v.name .. "/")
         end
     end
     return ret
@@ -99,8 +99,8 @@ local function injectLoc(loc)
     mergeTables(G.localization, loc)
 end
 
-function PotatoPatchUtils.LOC.process_loc_text(locPath, mod_id)
-    local txt = processLoc(locPath, mod_id)
+function PotatoPatchUtils.LOC.process_loc_text(locPath)
+    local txt = processLoc(locPath)
 
     injectLoc(txt['en-us'])
     injectLoc(txt['default'])
