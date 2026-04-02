@@ -14,14 +14,14 @@ These objects are used for credits and calculating contexts outside of a traditi
 `PotatoPatchUtils.Team(args)`
 `args` is a table of the following values:
 - `name` (string) [REQUIRED] - The name of the Team
-- `colour` (hex) - The Team name's text fill color
+- `colour` (colour/gradient) - The Team name's text fill colour
 - `loc` (string/boolean) - Assigns the Team's display name to a localization key of your choosing from `descriptions.PotatoPatch`. Will be assigned to `'PotatoPatchTeam_' .. args.name` if a boolean is passed
 - `calculate` (function(self, context)) - A traditional calculate function, much like global mod calculate from Steamodded
 
 `PotatoPatchUtils.Developer(args)`
 `args` is a table of the following values:
 - `name` (string) [REQUIRED] - The name of the Developer
-- `colour` (hex) - The Developer name's text fill color
+- `colour` (colour/gradient) - The Developer name's text fill colour
 - `loc` (string/boolean) - Assigns the Developer's display name to a localization key of your choosing from `descriptions.PotatoPatch`. Will be assigned to `'PotatoPatchDev_' .. args.name` if a boolean is passed
 - `calculate` (function(self, context)) - A traditional calculate function, much like global mod calculate from Steamodded
 - `team` (string) - The name of the Team the Developer is a part of
