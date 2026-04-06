@@ -2,7 +2,7 @@
     "name": "Potato Patch Utils",
     "no_marquee": true,
     "id": "PotatoPatchUtils",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "website_url": "https://github.com/Balatro-Potato-Patch/Potato-Patch-Utils",
     "description": "A util library for mods created by the Potato Patch",
     "prefix": "ppu",

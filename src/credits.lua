@@ -224,11 +224,11 @@ function PotatoPatchUtils.CREDITS.create_team_credit_page(team)
     end
 
     local max_columns = 1
-	local max_pool_len = math.min(math.ceil(#members / max_columns), 4)
-	local current_member = 1
+	local row_size = team.credit_rows or {5, 5} 
+	local row = 1
 	local table_nodes = {}
 
-	for i = 1, max_pool_len do
+	for i = 1, #row_size do
 		table_nodes[#table_nodes + 1] = {
 			n = G.UIT.R,
 			config = { align = "cm", padding = 0.1 },
@@ -236,14 +236,15 @@ function PotatoPatchUtils.CREDITS.create_team_credit_page(team)
 		}
 	end
 
-	local count = 0
+	local count = 1
 	for _, node in ipairs(PotatoPatchUtils.CREDITS.NODES) do
-		if count > max_pool_len then
-			count = 0
-			current_member = current_member + 1
+		if count > row_size[row] then
+			count = 1
+			row = row + 1
+            if row > #row_size then break end
 		end
 		count = count + 1
-		table_nodes[current_member].nodes[#table_nodes[current_member].nodes + 1] = node
+		table_nodes[row].nodes[#table_nodes[row].nodes + 1] = node
 	end
 
     local team_name = {}
@@ -259,7 +260,7 @@ function PotatoPatchUtils.CREDITS.create_team_credit_page(team)
 		config = { minw = 13, colour = G.C.CLEAR, align = "cm", id = "ppu_credits_page" },
 		nodes = {
             {n=G.UIT.C, config = {align = 'cm', padding = 0.1}, nodes = {
-                {n=G.UIT.R, config = {align = 'tm', minh = 8, padding = 0.1}, nodes = table_nodes},
+                {n=G.UIT.R, config = {align = #row_size == 1 and 'cm' or 'tm', minh = 8, padding = 0.1}, nodes = table_nodes},
                 {n=G.UIT.R, config = {align = 'cm', padding = 0.1}, nodes = {
                     {n=G.UIT.C, config = {minw = 0.7, minh = 0.7, align = 'cm', r = 0.1, colour = G.C.RED, hover = true, button = 'ppu_toggle_credit_page', change = -1, shadow = true}, nodes = {
                         {n=G.UIT.T, config = {text = '<', scale = 0.5, colour = G.C.WHITE}}

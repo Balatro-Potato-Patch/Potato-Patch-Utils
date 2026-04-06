@@ -17,6 +17,7 @@ These objects are used for credits and calculating contexts outside of a traditi
 - `colour` (hex) - The Team name's text fill color
 - `loc` (string/boolean) - Assigns the Team's display name to a localization key of your choosing from `descriptions.PotatoPatch`. Will be assigned to `'PotatoPatchTeam_' .. args.name` if a boolean is passed
 - `calculate` (function(self, context)) - A traditional calculate function, much like global mod calculate from Steamodded
+- `credit_rows` (table) how many developer objects to display on each row (credit screen has 2 rows, a table of 1 number will center the row in the page)
 
 `PotatoPatchUtils.Developer(args)`
 `args` is a table of the following values:
