@@ -1,0 +1,25 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/game_object.lua"]'''
+pattern = '''
+-- Add centers to pools
+o:inject(i)
+'''
+position = 'after'
+payload = '''
+
+-- PotatoPatchUtils automatic team attribute
+if o.ppu_team then
+    for _, v in pairs(o.ppu_team) do
+        if SMODS.Attributes[o.original_mod.prefix .. '_' .. v] then
+            SMODS.add_attribute(o.original_mod.prefix .. '_' .. v, { key })
+        end
+    end
+end
+'''
+match_indent = true

@@ -72,6 +72,7 @@ function PotatoPatchUtils.Developer:init(args)
         if args.team and PotatoPatchUtils.Teams[SMODS.current_mod.prefix .. '_' .. args.team] then
             table.insert(PotatoPatchUtils.Teams[SMODS.current_mod.prefix .. '_' .. args.team].members, self)
         end
+
     end
 end
 
@@ -90,7 +91,7 @@ end
 PotatoPatchUtils.Teams = {}
 PotatoPatchUtils.Team = Object:extend()
 function PotatoPatchUtils.Team:init(args)
-    if args.name and not PotatoPatchUtils.Teams[SMODS.current_mod.prefix .. args.name] then -- Prevents duplicate teams from being created
+    if args.name and not PotatoPatchUtils.Teams[SMODS.current_mod.prefix .. '_' .. args.name] then -- Prevents duplicate teams from being created
         for k, v in pairs(args or {}) do
             self[k] = v
         end
@@ -100,6 +101,10 @@ function PotatoPatchUtils.Team:init(args)
         self.mod_id = SMODS.current_mod.id
 
         PotatoPatchUtils.Teams[SMODS.current_mod.prefix .. '_' .. args.name] = self
+
+        SMODS.Attribute {
+            key = SMODS.current_mod.prefix .. '_' .. args.name
+        }
     end
 end
 
@@ -112,6 +117,10 @@ function PotatoPatchUtils.get_teams_scoring_targets()
     end
     return ret
 end
+
+-- Add loaded game object to attribute if it has matching team
+
+
 --#endregion
 
 --#region TMJ Compat
