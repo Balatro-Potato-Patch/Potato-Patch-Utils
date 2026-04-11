@@ -1,0 +1,20 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+# Allow SMODS.JimboQuip to have `ppu_dev = 'dev_key'` to use developer credit cards
+[[patches]]
+[patches.pattern]
+target = 'card_character.lua'
+match_indent = true
+position = 'after'
+pattern = '''
+self.children.card = Card(self.T.x, self.T.y, G.CARD_W, G.CARD_H, G.P_CARDS.empty, args.center and G.P_CENTERS[args.center] or G.P_CENTERS.j_joker, {bypass_discovery_center = true})
+'''
+payload = '''
+if args.ppu_dev then
+    self.children.card.children.center.atlas = SMODS.get_atlas(PotatoPatchUtils.Developers[args.ppu_dev].atlas)
+    self.children.card.children.center:set_sprite_pos(PotatoPatchUtils.Developers[args.ppu_dev].pos)
+end
+'''
