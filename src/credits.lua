@@ -227,6 +227,9 @@ function PotatoPatchUtils.CREDITS.create_team_credit_page(team)
             card.children.ppu_floating_sprite.states.click.can = false
         end
         PotatoPatchUtils.CREDITS.AREAS[i]:emplace(card)
+		
+		-- Attach member information to the card
+		card.ppu_member = member
 
 		-- Create tooltip
 		card.hover = function(self)
