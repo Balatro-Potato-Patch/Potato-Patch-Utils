@@ -24,7 +24,8 @@ PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix, mod_pref
         if target_row > #credit_string.nodes then table.insert(credit_string.nodes, {n=G.UIT.R, config={align='cm'}, nodes ={}}) end
         table.insert(credit_string.nodes[target_row].nodes, {n=G.UIT.O, config = {object = DynaText({
                     string = dev.loc and localize({type = 'name_text', key = dev.loc, set = 'PotatoPatch'}) or dev.name or 'ERROR',
-                    colours = { dev and dev.colour or G.C.UI.BACKGROUND_WHITE }, scale = 0.27,
+                    colours = (dev and dev.colours) or { dev and dev.colour or G.C.UI.BACKGROUND_WHITE }, scale = 0.27,
+					text_effect = dev and dev.text_effect or nil, shaders = dev and dev.shaders or nil,
                     silent = true, shadow = true, y_offset = -0.6, 
                 })
             }
@@ -268,8 +269,17 @@ function PotatoPatchUtils.CREDITS.create_team_credit_page(team)
 		end
 
         local name = {}
-        localize({ type = 'name', set = 'PotatoPatch', key = member.loc, nodes = name, scale = 0.8, maxw = 2, text_colour = member.colour, stylize = true, no_shadow = true, no_pop_in = true, no_bump = true, no_silent = true, no_spacing = true})
-        name = name[1] and name[1][1] or {n=G.UIT.T, config={scale = 0.47, colour = member.colour, text = member.name}}
+        if member.always_use_dynatext or member.text_effect or member.shaders or member.colours then
+		    name = {n=G.UIT.O, config = {object = DynaText({
+		        string = member.loc and localize({type = 'name_text', key = member.loc, set = 'PotatoPatch'}) or dev.name or 'ERROR',
+		        colours = member.colours or { member.colour or G.C.UI.BACKGROUND_WHITE }, scale = 0.47,
+		        text_effect = member.text_effect or nil, shaders = member.shaders or nil,
+		        silent = true, shadow = false, y_offset = -0.6,
+		    })}}
+		else
+        	localize({ type = 'name', set = 'PotatoPatch', key = member.loc, nodes = name, scale = 0.8, maxw = 2, text_colour = member.colour, stylize = true, no_shadow = true, no_pop_in = true, no_bump = true, no_silent = true, no_spacing = true})
+		    name = name[1] and name[1][1] or {n=G.UIT.T, config={scale = 0.47, colour = member.colour, text = member.name}}
+		end
 
         PotatoPatchUtils.CREDITS.NODES[i] = {n = G.UIT.C, config = { align = "cm", id = "ppu_credit_node_" .. member.name }, nodes = {
             {n = G.UIT.C, config = {r = 0.2, align = "cm", padding = 0.125, colour = G.C.L_BLACK, minw = G.CARD_W / 1.2 + 0.2, minh = G.CARD_H * 1.2}, nodes = {
