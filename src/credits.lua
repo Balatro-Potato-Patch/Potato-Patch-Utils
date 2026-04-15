@@ -243,6 +243,7 @@ function PotatoPatchUtils.CREDITS.create_team_credit_page(team)
 		-- Attach member and team information to the card
 		card.ppu_member = member
 		card.ppu_team = team
+        card.click = member.click or team.click or card.click
 
 		-- Create tooltip
 		card.hover = function(self)
