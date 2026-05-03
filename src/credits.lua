@@ -1,21 +1,14 @@
 PotatoPatchUtils.CREDITS = {}
 
 --#region Credits on Pop Up
-PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix, mod_prefix)
+PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix, mod_prefix, args)
     if type(developers) ~= 'table' then return end
 
-    if prefix == 'ppu_team_credit' then
-        for _, name in ipairs(developers) do
-            if PotatoPatchUtils.Teams[mod_prefix .. '_' .. name].short_credit then
-                prefix = prefix .. '_short'
-                break
-            end
-        end
-    end
+    args = args or {}
 
     local amount = #developers
     local credit_string = {n=G.UIT.R, config={align = 'tm'}, nodes={
-                {n=G.UIT.R, config={align='cm'}, nodes={{n=G.UIT.T, config={text = localize(prefix), shadow = true, colour = G.C.UI.BACKGROUND_WHITE, scale = 0.27}}}}
+                {n=G.UIT.R, config={align='cm'}, nodes={{n=G.UIT.T, config={text = localize(prefix), shadow = true, colour = args.colour or G.C.UI.BACKGROUND_WHITE, scale = 0.27}}}}
             }}
 
     for i, name in ipairs(developers) do
@@ -24,14 +17,13 @@ PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix, mod_pref
         if target_row > #credit_string.nodes then table.insert(credit_string.nodes, {n=G.UIT.R, config={align='cm'}, nodes ={}}) end
         table.insert(credit_string.nodes[target_row].nodes, {n=G.UIT.O, config = {object = DynaText({
                     string = dev.loc and localize({type = 'name_text', key = dev.loc, set = 'PotatoPatch'}) or dev.name or 'ERROR',
-                    colours = (dev and dev.colours) or { dev and dev.colour or G.C.UI.BACKGROUND_WHITE }, scale = 0.27,
-					text_effect = dev and dev.text_effect or nil, shaders = dev and dev.shaders or nil,
+                    colours = { dev and dev.colour or args.colour or G.C.UI.BACKGROUND_WHITE }, scale = 0.27,
                     silent = true, shadow = true, y_offset = -0.6, 
                 })
             }
         })
         if i < amount then
-            table.insert(credit_string.nodes[target_row].nodes, {n=G.UIT.T, config = {text = localize(i+1 == amount and 'ppu_and_spacer' or 'ppu_comma_spacer'), shadow = true, colour = G.C.UI.BACKGROUND_WHITE, scale = 0.27 } })
+            table.insert(credit_string.nodes[target_row].nodes, {n=G.UIT.T, config = {text = localize(i+1 == amount and 'ppu_and_spacer' or 'ppu_comma_spacer'), shadow = true, colour = args.colour or G.C.UI.BACKGROUND_WHITE, scale = 0.27 } })
         end
     end
 
@@ -41,7 +33,7 @@ end
 local PotatoPatchUtils_card_popup = G.UIDEF.card_h_popup
 function G.UIDEF.card_h_popup(card)
     local ret_val = PotatoPatchUtils_card_popup(card)
-    local obj = card.config.center or card.config.tag and SMODS.Tags[card.config.tag.key]
+    local obj = card.config.center
     local target = ret_val.nodes[1].nodes[1].nodes[1].nodes
     if obj and obj.ppu_team then
         local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_team, 'ppu_team_credit', obj.mod.prefix)
@@ -63,33 +55,6 @@ function G.UIDEF.card_h_popup(card)
     end
     return ret_val
 end
-
-local PotatoPatchUtils_create_UIBox_blind_popup = create_UIBox_blind_popup
-function create_UIBox_blind_popup(blind, discovered, vars)
-    local ret_val = PotatoPatchUtils_create_UIBox_blind_popup(blind, discovered, vars)
-    local obj = blind
-    local target = ret_val.nodes
-    if obj and obj.ppu_team then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_team, 'ppu_team_credit', obj.mod.prefix)
-        if str then
-            table.insert(target, str)
-        end
-    end
-    if obj and obj.ppu_artist then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_artist, 'ppu_art_credit', obj.mod.prefix)
-        if str then
-            table.insert(target, str)
-        end
-    end
-    if obj and obj.ppu_coder then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_coder, 'ppu_code_credit', obj.mod.prefix)
-        if str then
-            table.insert(target, str)
-        end
-    end
-    return ret_val
-end
-
 --#endregion
 
 --#region Developer Objects
@@ -217,34 +182,17 @@ function PotatoPatchUtils.CREDITS.create_team_credit_page(team)
     PotatoPatchUtils.CREDITS.NODES = {}
 
     for i, member in ipairs(members) do
-        -- Create area for card credit
         PotatoPatchUtils.CREDITS.AREAS[i] = CardArea(G.ROOM.T.x, G.ROOM.T.y, G.CARD_W / 1.25, G.CARD_H / 1.25, {type = 'title_2', card_limit = 1, highlight_limit = 0})
-
-        -- Create card for credit, set states
         local card = Card(G.ROOM.T.x, G.ROOM.T.y, G.CARD_W / 1.25, G.CARD_H / 1.25, nil, G.P_CENTERS.c_base)
         card.children.center:remove()
         card.children.center = SMODS.create_sprite(card.T.x, card.T.y, card.T.w, card.T.h, member.atlas or "Joker", member.pos or {x = 0, y = 0})
-        card.children.center.states.hover = card.states.hover
-        card.children.center.states.click = card.states.click
-        card.children.center.states.drag = card.states.drag
-        card.children.center.states.collide.can = true
-        card.children.center:set_role({major = card, role_type = 'Glued', draw_major = card})
-
-        -- Check for card soul
         if member.soul_pos then
             card.children.ppu_floating_sprite = SMODS.create_sprite(card.T.x, card.T.y, card.T.w, card.T.h, member.atlas or "Joker", member.soul_pos)
             card.children.ppu_floating_sprite.role.draw_major = card
             card.children.ppu_floating_sprite.states.hover.can = false
             card.children.ppu_floating_sprite.states.click.can = false
         end
-
-        -- Emplace card credit in its own area
         PotatoPatchUtils.CREDITS.AREAS[i]:emplace(card)
-		
-		-- Attach member and team information to the card
-		card.ppu_member = member
-		card.ppu_team = team
-        card.click = member.click or team.click or card.click
 
 		-- Create tooltip
 		card.hover = function(self)
@@ -270,17 +218,8 @@ function PotatoPatchUtils.CREDITS.create_team_credit_page(team)
 		end
 
         local name = {}
-        if member.always_use_dynatext or member.text_effect or member.shaders or member.colours then
-		    name = {n=G.UIT.O, config = {object = DynaText({
-		        string = member.loc and localize({type = 'name_text', key = member.loc, set = 'PotatoPatch'}) or dev.name or 'ERROR',
-		        colours = member.colours or { member.colour or G.C.UI.BACKGROUND_WHITE }, scale = 0.47,
-		        text_effect = member.text_effect or nil, shaders = member.shaders or nil,
-		        silent = true, shadow = false, y_offset = -0.6,
-		    })}}
-		else
-        	localize({ type = 'name', set = 'PotatoPatch', key = member.loc, nodes = name, scale = 0.8, maxw = 2, text_colour = member.colour, stylize = true, no_shadow = true, no_pop_in = true, no_bump = true, no_silent = true, no_spacing = true})
-		    name = name[1] and name[1][1] or {n=G.UIT.T, config={scale = 0.47, colour = member.colour, text = member.name}}
-		end
+        localize({ type = 'name', set = 'PotatoPatch', key = member.loc, nodes = name, scale = 0.8, maxw = 2, text_colour = member.colour, stylize = true, no_shadow = true, no_pop_in = true, no_bump = true, no_silent = true, no_spacing = true})
+        name = name[1] and name[1][1] or {n=G.UIT.T, config={scale = 0.47, colour = member.colour, text = member.name}}
 
         PotatoPatchUtils.CREDITS.NODES[i] = {n = G.UIT.C, config = { align = "cm", id = "ppu_credit_node_" .. member.name }, nodes = {
             {n = G.UIT.C, config = {r = 0.2, align = "cm", padding = 0.125, colour = G.C.L_BLACK, minw = G.CARD_W / 1.2 + 0.2, minh = G.CARD_H * 1.2}, nodes = {
@@ -292,6 +231,7 @@ function PotatoPatchUtils.CREDITS.create_team_credit_page(team)
                 }}
             }}
         }}
+        card.states.drag.can = false
     end
 
     local max_columns = 1
@@ -373,46 +313,4 @@ function PotatoPatchUtils.CREDITS.register_page(mod)
         } 
     end
 end
---#endregion
-
---#region JimboQuip stuff
-
-local floating_sprite_draw_ref = SMODS.DrawSteps["floating_sprite"].func
-SMODS.DrawSteps["floating_sprite"].func = function(self, layer)
-	floating_sprite_draw_ref(self, layer)
-	if self.is_dev_quip_sprite then
-		local scale_mod = 0.07
-			+ 0.02 * math.sin(1.8 * G.TIMERS.REAL)
-			+ 0.00
-				* math.sin((G.TIMERS.REAL - math.floor(G.TIMERS.REAL)) * math.pi * 14)
-				* (1 - (G.TIMERS.REAL - math.floor(G.TIMERS.REAL))) ^ 3
-		local rotate_mod = 0.05 * math.sin(1.219 * G.TIMERS.REAL)
-			+ 0.00 * math.sin(G.TIMERS.REAL * math.pi * 5) * (1 - (G.TIMERS.REAL - math.floor(G.TIMERS.REAL))) ^ 2
-		if self.children.floating_sprite then
-			self.children.floating_sprite:draw_shader(
-				"dissolve",
-				0,
-				nil,
-				nil,
-				self.children.center,
-				scale_mod,
-				rotate_mod,
-				nil,
-				0.1 + 0.03 * math.sin(1.8 * G.TIMERS.REAL),
-				nil,
-				0.6
-			)
-			self.children.floating_sprite:draw_shader(
-				"dissolve",
-				nil,
-				nil,
-				nil,
-				self.children.center,
-				scale_mod,
-				rotate_mod
-			)
-		end
-	end
-end
-
 --#endregion
