@@ -1,5 +1,8 @@
 PotatoPatchUtils = SMODS.current_mod
 
+assert(SMODS.current_mod.lovely,
+    "Lovely modules were not loaded.\nMake sure your Potato Patch Utils folder is not nested (there should be a bunch of files in the Potato Patch Utils folder and not just another folder).")
+
 --#region File Loading
 local nativefs = SMODS.NFS
 
