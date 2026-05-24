@@ -2,7 +2,7 @@
     "name": "Potato Patch Utils",
     "no_marquee": true,
     "id": "PotatoPatchUtils",
-    "version": "1.0.10",
+    "version": "1.0.11",
     "website_url": "https://github.com/Balatro-Potato-Patch/Potato-Patch-Utils",
     "description": "A util library for mods created by the Potato Patch",
     "prefix": "ppu",
@@ -11,7 +11,7 @@
     "priority": -5,
     "badge_colour": "#f5e27a",
     "dependencies": [
-        "Steamodded (>=1.0.0~BETA-1606b)"
+        "Steamodded (>=1.0.0~BETA-1620a)"
     ],
 	"allow_redistribution": true
 }
