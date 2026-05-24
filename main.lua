@@ -18,12 +18,7 @@ local function load_file_native(path)
     end
     local path_len = string.len(SMODS.current_mod.path) + 1
     local short_path = string.sub(path, path_len, path:len())
-    local chunk, err = load(file_content, "=[SMODS " .. SMODS.current_mod.id .. ' "' .. short_path .. '"]')
-    if not chunk then
-        return nil,
-        "Error processing file '" .. path .. "' for mod with ID '" .. SMODS.current_mod.id .. "': " .. err
-    end
-    return chunk
+    assert(SMODS.load_file(short_path))()
 end
 
 function PotatoPatchUtils.load_files(path, blacklist)
@@ -36,12 +31,7 @@ function PotatoPatchUtils.load_files(path, blacklist)
         if v.type == "directory" and not blacklist[v.name] then
             PotatoPatchUtils.load_files(path .. '/' .. v.name, blacklist)
         elseif string.find(v.name, ".lua") and not blacklist[v.name] then -- no X.lua.txt files or whatever unless they are also lua files
-            local f, err = load_file_native(path .. "/" .. v.name)
-            if f then
-                f()
-            else
-                error("error in file " .. v.name .. ": " .. err)
-            end
+            load_file_native(path .. "/" .. v.name)
         end
     end
 end
