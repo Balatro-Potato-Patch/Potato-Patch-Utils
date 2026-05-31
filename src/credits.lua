@@ -1,7 +1,7 @@
 PotatoPatchUtils.CREDITS = {}
 
 --#region Credits on Pop Up
-PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix, mod_prefix, obj)
+PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix, mod_prefix, obj, args)
     if type(developers) ~= 'table' then return end
 
     if prefix == 'ppu_team_credit' then
@@ -13,11 +13,12 @@ PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix, mod_pref
         end
     end
 
+    args = args or {}
     local padding = obj.set and obj.set == 'Sleeve' and 0 or 0.03
 
     local amount = #developers
     local credit_string = {n=G.UIT.R, config={align = 'tm'}, nodes={
-                {n=G.UIT.R, config={align='cm', padding = padding}, nodes={{n=G.UIT.T, config={text = localize(prefix), shadow = true, colour = G.C.UI.BACKGROUND_WHITE, scale = 0.27}}}}
+                {n=G.UIT.R, config={align='cm', padding = padding}, nodes={{n=G.UIT.T, config={text = localize(prefix), shadow = true, colour = args.colour or G.C.UI.BACKGROUND_WHITE, scale = 0.27}}}}
             }}
 
     for i, name in ipairs(developers) do
@@ -26,14 +27,14 @@ PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix, mod_pref
         if target_row > #credit_string.nodes then table.insert(credit_string.nodes, {n=G.UIT.R, config={align='cm'}, nodes ={}}) end
         table.insert(credit_string.nodes[target_row].nodes, {n=G.UIT.O, config = {object = DynaText({
                     string = dev.loc and localize({type = 'name_text', key = dev.loc, set = 'PotatoPatch'}) or dev.name or 'ERROR',
-                    colours = (dev and dev.colours) or { dev and dev.colour or G.C.UI.BACKGROUND_WHITE }, scale = 0.27,
+                    colours = (dev and dev.colours) or { dev and dev.colour or args.colour or G.C.UI.BACKGROUND_WHITE }, scale = 0.27,
 					text_effect = dev and dev.text_effect or nil, shaders = dev and dev.shaders or nil,
                     silent = true, shadow = true, y_offset = -0.6, 
                 })
             }
         })
         if i < amount then
-            table.insert(credit_string.nodes[target_row].nodes, {n=G.UIT.T, config = {text = localize(i+1 == amount and 'ppu_and_spacer' or 'ppu_comma_spacer'), shadow = true, colour = G.C.UI.BACKGROUND_WHITE, scale = 0.27 } })
+            table.insert(credit_string.nodes[target_row].nodes, {n=G.UIT.T, config = {text = localize(i+1 == amount and 'ppu_and_spacer' or 'ppu_comma_spacer'), shadow = true, colour = args.colour or G.C.UI.BACKGROUND_WHITE, scale = 0.27 } })
         end
     end
 
@@ -68,20 +69,23 @@ function create_UIBox_blind_popup(blind, discovered, vars)
     local ret_val = PotatoPatchUtils_create_UIBox_blind_popup(blind, discovered, vars)
     local obj = blind
     local target = ret_val.nodes
+
+    local args = { colour = G.C.UI.TEXT_DARK }
+
     if obj and obj.ppu_team then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_team, 'ppu_team_credit', obj.mod.prefix, obj)
+        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_team, 'ppu_team_credit', obj.mod.prefix, obj, args)
         if str then
             table.insert(target, str)
         end
     end
     if obj and obj.ppu_artist then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_artist, 'ppu_art_credit', obj.mod.prefix, obj)
+        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_artist, 'ppu_art_credit', obj.mod.prefix, obj, args)
         if str then
             table.insert(target, str)
         end
     end
     if obj and obj.ppu_coder then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_coder, 'ppu_code_credit', obj.mod.prefix, obj)
+        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_coder, 'ppu_code_credit', obj.mod.prefix, obj, args)
         if str then
             table.insert(target, str)
         end
