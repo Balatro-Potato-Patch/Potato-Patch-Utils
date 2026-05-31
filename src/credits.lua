@@ -1,7 +1,7 @@
 PotatoPatchUtils.CREDITS = {}
 
 --#region Credits on Pop Up
-PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix, mod_prefix)
+PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix, mod_prefix, obj)
     if type(developers) ~= 'table' then return end
 
     if prefix == 'ppu_team_credit' then
@@ -13,9 +13,11 @@ PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix, mod_pref
         end
     end
 
+    local padding = obj.set and obj.set == 'Sleeve' and 0 or 0.03
+
     local amount = #developers
     local credit_string = {n=G.UIT.R, config={align = 'tm'}, nodes={
-                {n=G.UIT.R, config={align='cm'}, nodes={{n=G.UIT.T, config={text = localize(prefix), shadow = true, colour = G.C.UI.BACKGROUND_WHITE, scale = 0.27}}}}
+                {n=G.UIT.R, config={align='cm', padding = padding}, nodes={{n=G.UIT.T, config={text = localize(prefix), shadow = true, colour = G.C.UI.BACKGROUND_WHITE, scale = 0.27}}}}
             }}
 
     for i, name in ipairs(developers) do
@@ -38,30 +40,27 @@ PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix, mod_pref
     return credit_string
 end
 
-local PotatoPatchUtils_card_popup = G.UIDEF.card_h_popup
-function G.UIDEF.card_h_popup(card)
-    local ret_val = PotatoPatchUtils_card_popup(card)
-    local obj = card.config.center or card.config.tag and SMODS.Tags[card.config.tag.key]
-    local target = ret_val.nodes[1].nodes[1].nodes[1].nodes
+local PotatoPatchUtils_create_mod_badges = SMODS.create_mod_badges
+function SMODS.create_mod_badges(obj, badges)
+    PotatoPatchUtils_create_mod_badges(obj, badges)
     if obj and obj.ppu_team then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_team, 'ppu_team_credit', obj.mod.prefix)
+        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_team, 'ppu_team_credit', obj.mod.prefix, obj)
         if str then
-            table.insert(target, str)
+            table.insert(badges, str)
         end
     end
     if obj and obj.ppu_artist then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_artist, 'ppu_art_credit', obj.mod.prefix)
+        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_artist, 'ppu_art_credit', obj.mod.prefix, obj)
         if str then
-            table.insert(target, str)
+            table.insert(badges, str)
         end
     end
     if obj and obj.ppu_coder then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_coder, 'ppu_code_credit', obj.mod.prefix)
+        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_coder, 'ppu_code_credit', obj.mod.prefix, obj)
         if str then
-            table.insert(target, str)
+            table.insert(badges, str)
         end
     end
-    return ret_val
 end
 
 local PotatoPatchUtils_create_UIBox_blind_popup = create_UIBox_blind_popup
@@ -70,19 +69,19 @@ function create_UIBox_blind_popup(blind, discovered, vars)
     local obj = blind
     local target = ret_val.nodes
     if obj and obj.ppu_team then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_team, 'ppu_team_credit', obj.mod.prefix)
+        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_team, 'ppu_team_credit', obj.mod.prefix, obj)
         if str then
             table.insert(target, str)
         end
     end
     if obj and obj.ppu_artist then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_artist, 'ppu_art_credit', obj.mod.prefix)
+        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_artist, 'ppu_art_credit', obj.mod.prefix, obj)
         if str then
             table.insert(target, str)
         end
     end
     if obj and obj.ppu_coder then
-        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_coder, 'ppu_code_credit', obj.mod.prefix)
+        local str = PotatoPatchUtils.CREDITS.generate_string(obj.ppu_coder, 'ppu_code_credit', obj.mod.prefix, obj)
         if str then
             table.insert(target, str)
         end
