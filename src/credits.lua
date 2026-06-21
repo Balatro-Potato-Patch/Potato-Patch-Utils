@@ -6,7 +6,8 @@ PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix, mod_pref
 
     if prefix == 'ppu_team_credit' then
         for _, name in ipairs(developers) do
-            if PotatoPatchUtils.Teams[mod_prefix .. '_' .. name].short_credit then
+            local team = PotatoPatchUtils.Teams[mod_prefix .. '_' .. name]
+            if team and team.short_credit then
                 prefix = prefix .. '_short'
                 break
             end
@@ -26,7 +27,7 @@ PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix, mod_pref
         local dev = PotatoPatchUtils.Developers[mod_prefix .. '_' .. name] or PotatoPatchUtils.Teams[mod_prefix .. '_' .. name] or {}
         if target_row > #credit_string.nodes then table.insert(credit_string.nodes, {n=G.UIT.R, config={align='cm'}, nodes ={}}) end
         table.insert(credit_string.nodes[target_row].nodes, {n=G.UIT.O, config = {object = DynaText({
-                    string = dev.loc and localize({type = 'name_text', key = dev.loc, set = 'PotatoPatch'}) or dev.name or 'ERROR',
+                    string = dev.loc and localize({type = 'name_text', key = dev.loc, set = 'PotatoPatch'}) or dev.name or name or 'ERROR',
                     colours = (dev and dev.colours) or { dev and dev.colour or args.colour or G.C.UI.BACKGROUND_WHITE }, scale = 0.27,
 					text_effect = dev and dev.text_effect or nil, shaders = dev and dev.shaders or nil,
                     silent = true, shadow = true, y_offset = -0.6, 
