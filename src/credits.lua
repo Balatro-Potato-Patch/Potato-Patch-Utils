@@ -176,19 +176,44 @@ end
 --#endregion
 
 --#region Automatic Credit Page
-function PotatoPatchUtils.CREDITS.create_credit_tab(mod)
-    local mod_teams = {}
-    for _, team in pairs(PotatoPatchUtils.Teams) do
-        if team.mod_id == mod.id then
-            table.insert(mod_teams, team)
+function PotatoPatchUtils.CREDITS.create_credit_tab(mod, no_teams)
+    if no_teams then
+        local mod_devs = {}
+        local i = 1
+        for _, dev in pairs(PotatoPatchUtils.Developers) do
+            if dev.mod_id == mod.id then
+                if type(mod_devs[i]) ~= 'table' then
+                    mod_devs[i] = {}
+                end
+                table.insert(mod_devs[i], dev)
+                if #mod_devs[i] == 10 then
+                    i = i + 1
+                end
+            end
         end
-    end
 
-    return {n = G.UIT.ROOT, config = { align = "m", r = 0.1, padding = 0.05, colour = G.C.BLACK, minw = 8, minh = 9 }, nodes = {
-        {n=G.UIT.C, config = {align = 'cm', id = 'ppu_credits_page_nodes', teams = mod_teams, current_team = 1}, nodes = {
-            next(mod_teams) and PotatoPatchUtils.CREDITS.create_team_credit_page(mod_teams[1]),
+        PotatoPatchUtils.current_devs_credits_page = 1
+        PotatoPatchUtils.max_devs_credits_pages = #mod_devs
+
+        return {n = G.UIT.ROOT, config = { align = "m", r = 0.1, padding = 0.05, colour = G.C.BLACK, minw = 8, minh = 9 }, nodes = {
+            {n=G.UIT.C, config = {align = 'cm', id = 'ppu_credits_page_nodes', devs = mod_devs, current_page = 1}, nodes = {
+                next(mod_devs) and PotatoPatchUtils.CREDITS.create_devs_credit_page(mod_devs[1]),
+            }}
         }}
-    }}
+    else
+        local mod_teams = {}
+        for _, team in pairs(PotatoPatchUtils.Teams) do
+            if team.mod_id == mod.id then
+                table.insert(mod_teams, team)
+            end
+        end
+
+        return {n = G.UIT.ROOT, config = { align = "m", r = 0.1, padding = 0.05, colour = G.C.BLACK, minw = 8, minh = 9 }, nodes = {
+            {n=G.UIT.C, config = {align = 'cm', id = 'ppu_credits_page_nodes', teams = mod_teams, current_team = 1}, nodes = {
+                next(mod_teams) and PotatoPatchUtils.CREDITS.create_team_credit_page(mod_teams[1]),
+            }}
+        }}
+    end
 end
 
 SMODS.draw_ignore_keys.ppu_floating_sprite = true
@@ -352,26 +377,176 @@ function PotatoPatchUtils.CREDITS.create_team_credit_page(team)
 	}
 end
 
+function PotatoPatchUtils.CREDITS.create_devs_credit_page(devs)
+    local areas = {}
+    if PotatoPatchUtils.CREDITS.AREAS then
+        for _, area in ipairs(PotatoPatchUtils.CREDITS.AREAS) do
+            area:remove()
+        end
+    end
+
+    PotatoPatchUtils.CREDITS.AREAS = {}
+    PotatoPatchUtils.CREDITS.NODES = {}
+
+    for i, dev in ipairs(devs) do
+        -- Create area for card credit
+        PotatoPatchUtils.CREDITS.AREAS[i] = CardArea(G.ROOM.T.x, G.ROOM.T.y, G.CARD_W / 1.25, G.CARD_H / 1.25, {type = 'title_2', card_limit = 1, highlight_limit = 0})
+
+        -- Create card for credit, set states
+        local card = Card(G.ROOM.T.x, G.ROOM.T.y, G.CARD_W / 1.25, G.CARD_H / 1.25, nil, G.P_CENTERS.c_base)
+        card.children.center:remove()
+        card.children.center = SMODS.create_sprite(card.T.x, card.T.y, card.T.w, card.T.h, dev.atlas or "Joker", dev.pos or {x = 0, y = 0})
+        card.children.center.states.hover = card.states.hover
+        card.children.center.states.click = card.states.click
+        card.children.center.states.drag = card.states.drag
+        card.children.center.states.collide.can = true
+        card.children.center:set_role({major = card, role_type = 'Glued', draw_major = card})
+
+        -- Check for card soul
+        if dev.soul_pos then
+            card.children.ppu_floating_sprite = SMODS.create_sprite(card.T.x, card.T.y, card.T.w, card.T.h, dev.atlas or "Joker", dev.soul_pos)
+            card.children.ppu_floating_sprite.role.draw_major = card
+            card.children.ppu_floating_sprite.states.hover.can = false
+            card.children.ppu_floating_sprite.states.click.can = false
+        end
+
+        -- Emplace card credit in its own area
+        PotatoPatchUtils.CREDITS.AREAS[i]:emplace(card)
+		
+		-- Attach dev information to the card
+		card.ppu_member = dev
+        card.click = dev.click or card.click
+
+		-- Create tooltip
+		card.hover = function(self)
+			local info_nodes = {n = G.UIT.R, config = { align = "cm", padding = 0, colour = G.C.CLEAR }, nodes = {
+                {n = G.UIT.C, config = { align = "cm", padding = 0.2 }, nodes = {}},
+            }}
+            local text = dev.loc and G.localization.descriptions.PotatoPatch[dev.loc].text_parsed or nil
+			if text then
+                if not text[1][1][1] then text = {text} end
+                for _, box in ipairs(text) do
+                    local node = {n=G.UIT.R, config = {colour = G.C.L_BLACK, r=0.1, padding = 0.15, align = 'cm', shadow = true}, nodes = {}}
+                    for _, v in ipairs(box) do
+                        table.insert(node.nodes, {n=G.UIT.R, config={align='cm'}, nodes = SMODS.localize_box(v, {text_colour = G.C.UI.TEXT_LIGHT})})
+                    end
+                    info_nodes.nodes[1].nodes[#info_nodes.nodes[1].nodes + 1] = {n=G.UIT.R, config = {align = 'cm'}, nodes = {{n=G.UIT.C, config = {align = 'cm', colour = G.C.WHITE, r=0.1, padding = 0.025}, nodes = {node}}}}
+                end
+			end
+			self:juice_up(0.05, 0.03)
+			play_sound('paper1', math.random() * 0.2 + 0.9, 0.35)
+			card.config.h_popup = info_nodes
+			card.config.h_popup_config = self:align_h_popup()
+			Moveable.hover(self)
+		end
+
+        local name = {}
+        if dev.always_use_dynatext or dev.text_effect or dev.shaders or dev.colours then
+		    name = {n=G.UIT.O, config = {object = DynaText({
+		        string = dev.loc and localize({type = 'name_text', key = dev.loc, set = 'PotatoPatch'}) or dev.name or 'ERROR',
+		        colours = dev.colours or { dev.colour or G.C.UI.BACKGROUND_WHITE }, scale = 0.47,
+		        text_effect = dev.text_effect or nil, shaders = dev.shaders or nil,
+		        silent = true, shadow = false, y_offset = -0.6,
+		    })}}
+		else
+        	localize({ type = 'name', set = 'PotatoPatch', key = dev.loc, nodes = name, scale = 0.8, maxw = 2, text_colour = dev.colour, stylize = true, no_shadow = true, no_pop_in = true, no_bump = true, no_silent = true, no_spacing = true})
+		    name = name[1] and name[1][1] or {n=G.UIT.T, config={scale = 0.47, colour = dev.colour, text = dev.name}}
+		end
+
+        PotatoPatchUtils.CREDITS.NODES[i] = {n = G.UIT.C, config = { align = "cm", id = "ppu_credit_node_" .. dev.name }, nodes = {
+            {n = G.UIT.C, config = {r = 0.2, align = "cm", padding = 0.125, colour = G.C.L_BLACK, minw = G.CARD_W / 1.2 + 0.2, minh = G.CARD_H * 1.2}, nodes = {
+                {n = G.UIT.C, config = {r = 0.2, align = "tm", padding = 0.1, colour = G.C.BLACK, minw = G.CARD_W / 1.2, minh = G.CARD_H}, nodes = {
+                    {n = G.UIT.R, config = {align = "cm"}, nodes = {name}},
+                    {n = G.UIT.R, config = {align = "cm"}, nodes = {
+                        {n = G.UIT.O, config = {object =  PotatoPatchUtils.CREDITS.AREAS[i]}}
+                    }}
+                }}
+            }}
+        }}
+    end
+
+    local max_columns = 1
+	local row_size =  {5, 5}
+	local row = 1
+	local table_nodes = {}
+
+	for i = 1, #row_size do
+		table_nodes[#table_nodes + 1] = {
+			n = G.UIT.R,
+			config = { align = "cm", padding = 0.1 },
+			nodes = {}
+		}
+	end
+
+	local count = 1
+	for _, node in ipairs(PotatoPatchUtils.CREDITS.NODES) do
+		if count > row_size[row] then
+			count = 1
+			row = row + 1
+            if row > #row_size then break end
+		end
+		count = count + 1
+		table_nodes[row].nodes[#table_nodes[row].nodes + 1] = node
+	end
+
+	-- create a card for this dev
+	return {
+		n = G.UIT.R,
+		config = { minw = 13, colour = G.C.CLEAR, align = "cm", id = "ppu_credits_page" },
+		nodes = {
+            {n=G.UIT.C, config = {align = 'cm', padding = 0.1}, nodes = {
+                {n=G.UIT.R, config = {align = #row_size == 1 and 'cm' or 'tm', minh = 8, padding = 0.1}, nodes = table_nodes},
+                {n=G.UIT.R, config = {align = 'cm', padding = 0.1}, nodes = {
+                    {n=G.UIT.C, config = {minw = 0.7, minh = 0.7, align = 'cm', r = 0.1, colour = G.C.RED, hover = true, button = 'ppu_toggle_credit_page', change = -1, shadow = true}, nodes = {
+                        {n=G.UIT.T, config = {text = '<', scale = 0.5, colour = G.C.WHITE}}
+                    }},
+                    {n=G.UIT.C, config = {minw = 0.7, colour = G.C.CLEAR}},
+                    {n=G.UIT.C, config = {minw = 7, maxw = 7, minh = 1.3, align = 'cm', r = 0.1, colour = G.C.RED, stylize = true, no_shadow = true, no_pop_in = true, no_bump = true, no_silent = true, no_spacing = true}, nodes = {
+                        {n=G.UIT.T, config = {text = localize('k_page')..' '..PotatoPatchUtils.current_devs_credits_page..'/'..PotatoPatchUtils.max_devs_credits_pages, scale = 0.5, colour = G.C.WHITE}}
+                    }},
+                    {n=G.UIT.C, config = {minw = 0.7, colour = G.C.CLEAR}},
+                    {n=G.UIT.C, config = {minw = 0.7, minh = 0.5, align = 'cm', r = 0.1, colour = G.C.RED, hover = true, button = 'ppu_toggle_credit_page', change = 1, shadow = true}, nodes = {
+                        {n=G.UIT.T, config = {text = '>', scale = 0.5, colour = G.C.WHITE}}
+                    }},
+                }},
+            }}
+        }
+	}
+end
+
 function G.FUNCS.ppu_toggle_credit_page(e)
 	if not e then return end
 	local credit_nodes = G.OVERLAY_MENU:get_UIE_by_ID("ppu_credits_page_nodes")
 	if credit_nodes then
-        local teams = credit_nodes.config.teams
-        local new_selection = (credit_nodes.config.current_team + e.config.change - 1) % #teams + 1
-        -- if new_selection > #teams then new_selection = 1 elseif new_selection == 0 then new_selection = #teams end
-        credit_nodes:remove()
-        local uibox = PotatoPatchUtils.CREDITS.create_team_credit_page(teams[new_selection])
-        credit_nodes.config.current_team = new_selection
-		credit_nodes.UIBox:add_child(uibox, credit_nodes)
-		credit_nodes.UIBox:recalculate()
+        if credit_nodes.config.teams then
+            local teams = credit_nodes.config.teams
+            local new_selection = (credit_nodes.config.current_team + e.config.change - 1) % #teams + 1
+            -- if new_selection > #teams then new_selection = 1 elseif new_selection == 0 then new_selection = #teams end
+            credit_nodes:remove()
+            local uibox = PotatoPatchUtils.CREDITS.create_team_credit_page(teams[new_selection])
+            credit_nodes.config.current_team = new_selection
+            credit_nodes.UIBox:add_child(uibox, credit_nodes)
+            credit_nodes.UIBox:recalculate()
+        elseif credit_nodes.config.devs then
+            local devs = credit_nodes.config.devs
+            local new_selection = (credit_nodes.config.current_page + e.config.change - 1) % #devs + 1
+            -- if new_selection > #devs then new_selection = 1 elseif new_selection == 0 then new_selection = #devs end
+            credit_nodes:remove()
+            PotatoPatchUtils.current_devs_credits_page = new_selection
+            local uibox = PotatoPatchUtils.CREDITS.create_devs_credit_page(devs[new_selection])
+            credit_nodes.config.current_page = new_selection
+            credit_nodes.UIBox:add_child(uibox, credit_nodes)
+            credit_nodes.UIBox:recalculate()
+            
+        end
 	end
 end
 
-function PotatoPatchUtils.CREDITS.register_page(mod)
+function PotatoPatchUtils.CREDITS.register_page(mod, no_team)
     return function()
         return{
             tab_definition_function = function()
-                return PotatoPatchUtils.CREDITS.create_credit_tab(mod)
+                return PotatoPatchUtils.CREDITS.create_credit_tab(mod, no_team)
             end,
             label = localize('ppu_credits_tab_label')
         } 
