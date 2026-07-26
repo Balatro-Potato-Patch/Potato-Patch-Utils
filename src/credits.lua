@@ -99,6 +99,7 @@ end
 --#region Developer Objects
 PotatoPatchUtils.Developers = {}
 PotatoPatchUtils.Developer = Object:extend()
+PotatoPatchUtils.Developer.obj_buffer = {}
 function PotatoPatchUtils.Developer:init(args)
     if args.name and not PotatoPatchUtils.Developers[SMODS.current_mod.prefix .. args.name] then -- Prevents duplicate developers from being created
         for k, v in pairs(args or {}) do
@@ -109,6 +110,7 @@ function PotatoPatchUtils.Developer:init(args)
         self.mod_id = SMODS.current_mod.id
 
         PotatoPatchUtils.Developers[SMODS.current_mod.prefix .. '_' .. args.name] = self
+        table.insert(PotatoPatchUtils.Developer.obj_buffer, SMODS.current_mod.prefix .. '_' .. args.name)
 
         if args.team and PotatoPatchUtils.Teams[SMODS.current_mod.prefix .. '_' .. args.team] then
             table.insert(PotatoPatchUtils.Teams[SMODS.current_mod.prefix .. '_' .. args.team].members, self)
@@ -131,6 +133,7 @@ end
 --#region Team Objects
 PotatoPatchUtils.Teams = {}
 PotatoPatchUtils.Team = Object:extend()
+PotatoPatchUtils.Team.obj_buffer = {}
 function PotatoPatchUtils.Team:init(args)
     if args.name and not PotatoPatchUtils.Teams[SMODS.current_mod.prefix .. '_' .. args.name] then -- Prevents duplicate teams from being created
         for k, v in pairs(args or {}) do
@@ -139,9 +142,10 @@ function PotatoPatchUtils.Team:init(args)
         
         self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchTeam_' .. args.name or args.loc
         self.members = {}
-        self.mod_id = SMODS.current_mod.id
+        self.mod_id = SMODS.current_mod.id        
 
         PotatoPatchUtils.Teams[SMODS.current_mod.prefix .. '_' .. args.name] = self
+        table.insert(PotatoPatchUtils.Team.obj_buffer, SMODS.current_mod.prefix .. '_' .. args.name)
 
         SMODS.Attribute {
             key = SMODS.current_mod.prefix .. '_' .. args.name
