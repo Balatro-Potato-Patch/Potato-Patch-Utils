@@ -108,9 +108,10 @@ function PotatoPatchUtils.Developer:init(args)
 
         self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchDev_' .. args.name or args.loc
         self.mod_id = SMODS.current_mod.id
+        self.key = SMODS.current_mod.prefix .. '_' .. args.name
 
-        PotatoPatchUtils.Developers[SMODS.current_mod.prefix .. '_' .. args.name] = self
-        table.insert(PotatoPatchUtils.Developer.obj_buffer, SMODS.current_mod.prefix .. '_' .. args.name)
+        PotatoPatchUtils.Developers[self.key] = self
+        table.insert(PotatoPatchUtils.Developer.obj_buffer, self.key)
 
         if args.team and PotatoPatchUtils.Teams[SMODS.current_mod.prefix .. '_' .. args.team] then
             table.insert(PotatoPatchUtils.Teams[SMODS.current_mod.prefix .. '_' .. args.team].members, self)
@@ -142,13 +143,14 @@ function PotatoPatchUtils.Team:init(args)
         
         self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchTeam_' .. args.name or args.loc
         self.members = {}
-        self.mod_id = SMODS.current_mod.id        
+        self.mod_id = SMODS.current_mod.id
+        self.key = SMODS.current_mod.prefix .. '_' .. args.name
 
-        PotatoPatchUtils.Teams[SMODS.current_mod.prefix .. '_' .. args.name] = self
-        table.insert(PotatoPatchUtils.Team.obj_buffer, SMODS.current_mod.prefix .. '_' .. args.name)
+        PotatoPatchUtils.Teams[self.key] = self
+        table.insert(PotatoPatchUtils.Team.obj_buffer, self.key)
 
         SMODS.Attribute {
-            key = SMODS.current_mod.prefix .. '_' .. args.name
+            key = self.key
         }
     end
 end
