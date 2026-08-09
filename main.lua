@@ -30,7 +30,7 @@ function PotatoPatchUtils.load_files(path, blacklist)
     for _, v in ipairs(info) do
         if v.type == "directory" and not blacklist[v.name] then
             PotatoPatchUtils.load_files(path .. '/' .. v.name, blacklist)
-        elseif string.find(v.name, "%.lua") and not blacklist[v.name] then -- no X.lua.txt files or whatever unless they are also lua files
+        elseif string.find(v.name, "%.lua$") and not blacklist[v.name] then -- no X.lua.txt files or whatever unless they are also lua files
             load_file_native(path .. "/" .. v.name)
         end
     end
