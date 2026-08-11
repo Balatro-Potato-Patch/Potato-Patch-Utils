@@ -12,6 +12,12 @@ return {
 
             -- UI
             ppu_first_time_disable = "Do not show again",
+
+            -- TOOLTIP BUBBLES
+            ppu_bubble_usable = ' usable ',
+            ppu_bubble_toggle = ' toggle ',
+            ppu_bubble_active = ' active ',
+            ppu_bubble_inactive = ' inactive ',
         }
     },
     PotatoPatch = {

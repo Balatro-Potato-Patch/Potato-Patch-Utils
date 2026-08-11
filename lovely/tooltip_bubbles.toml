@@ -1,0 +1,35 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+# Add ppu_bubble support
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/utils.lua"]'
+match_indent = true
+position = 'before'
+pattern = '''
+elseif part.control.X or part.control.B then
+'''
+payload = '''
+elseif part.control.ppu_bubble then
+     final_line[#final_line+1] = {n=G.UIT.C, config = {padding = 0.05}, nodes = {
+        {n=G.UIT.C, config={align = "m", colour = PotatoPatchUtils.Bubble_Colours[PotatoPatchUtils.extract_bubble(part.control.ppu_bubble, args.vars.ppu_bubbles)] or G.C.RED, r = 0.05, padding = 0.06, res = 0.45}, nodes={
+            {n=G.UIT.T, config={text = localize('ppu_bubble_'..PotatoPatchUtils.extract_bubble(part.control.ppu_bubble, args.vars.ppu_bubbles)), colour = G.C.UI.TEXT_LIGHT, scale = 0.24}},
+        }}
+    }}
+'''
+
+# Fix empty loc tags being ignored
+[[patches]]
+[patches.pattern]
+target = 'functions/misc_functions.lua'
+match_indent = true
+position = 'after'
+pattern = '''
+if str_parts[1] or control.element then parsed_line[#parsed_line+1] = {strings = str_parts, control = control or {}} end
+'''
+payload = '''
+if control.ppu_bubble then parsed_line[#parsed_line+1] = {strings = str_parts, control = control or {}} end
+'''
