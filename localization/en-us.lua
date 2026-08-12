@@ -15,9 +15,12 @@ return {
 
             -- TOOLTIP BUBBLES
             ppu_bubble_usable = ' usable ',
+            ppu_bubble_used = ' used ',
             ppu_bubble_toggle = ' toggle ',
             ppu_bubble_active = ' active ',
             ppu_bubble_inactive = ' inactive ',
+            ppu_bubble_compatible = ' compatible ',
+            ppu_bubble_incompatible = ' incompatible ',
         }
     },
     PotatoPatch = {
