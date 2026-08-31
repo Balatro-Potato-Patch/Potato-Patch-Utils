@@ -4,6 +4,6 @@
     "website_url": "https://github.com/Balatro-Potato-Patch/Potato-Patch-Utils",
     "description": "A util library for mods created by the Potato Patch",
     "dependencies": [
-        "Steamodded-1.1620.0"
+        "Steamodded-Steamodded-1.1620.0"
     ]
 }
