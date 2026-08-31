@@ -1,0 +1,9 @@
+{
+    "name": "Potato Patch Utils",
+    "version_number": "1.0.16",
+    "website_url": "https://github.com/Balatro-Potato-Patch/Potato-Patch-Utils",
+    "description": "A util library for mods created by the Potato Patch",
+    "dependencies": [
+        "Steamodded-1.1620.0"
+    ]
+}
